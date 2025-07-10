@@ -1,52 +1,39 @@
 import os
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-# خذ رقم البورت من متغيرات البيئة (Render)
-PORT = int(os.environ.get("PORT", 10000))
-
-
-# صفحة التفسير المختصر 1 فقط
+# رابط الصفحة الوحيدة للتفسير المختصر
 short_tafsir_pages = {
-    "1": "https://i.postimg.cc/SRbqR4Zj/IMG-20250707-202815-062.jpg"
+    "1": "https://i.postimg.cc/SRbqR4Zj/IMG-20250707-202815-062.jpg"
 }
 
-
+# جلب التوكن والبورت من متغيرات البيئة (Render)
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 8443))
+PORT = int(os.environ.get("PORT", 10000))
 
-
-# دالة التعامل مع الرسائل
+# الدالة التي تتعامل مع الرسائل
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.strip()
+    text = update.message.text.strip()
 
-    # فقط إذا الرسالة بصيغة صحيحة
-    if text == "التفسير المختصر صفحة 1":
-        await update.message.reply_photo(short_tafsir_pages["1"])
-    # غير هيك → ما يرد نهائيًا
+    if text == "التفسير المختصر صفحة 1":
+        await update.message.reply_photo(short_tafsir_pages["1"])
+    # غير هيك، لا ترد بشيء
 
-async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    page = update.message.text.strip()
-
-    if page.isdigit() and page in pages:
-        await update.message.reply_photo(photo=pages[page])
-    # غير هيك، يسكت تماماً وما يرد بشيء
-    
+# تشغيل البوت باستخدام Webhook
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
+    webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
 
-    webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
+    print(f"✅ Webhook set to {webhook_url}")
 
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=BOT_TOKEN,
-        webhook_url=webhook_url,
-    )
-    print(f"✅ Webhook set to {webhook_url}")
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=BOT_TOKEN,
+        webhook_url=webhook_url,
+    )
 
-if name == "main":
-    main()
+if __name__ == "__main__":
+    main()
