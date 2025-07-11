@@ -4,7 +4,6 @@ from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filte
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
-    
     "1": "https://i.postimg.cc/5ttKF7v4/0001.jpg",
     "2": "https://i.postimg.cc/4xsSXNxh/0002.jpg",
     "3": "https://i.postimg.cc/mgj6kfPp/0003.jpg",
@@ -29,32 +28,32 @@ tafsir_pages = {
     "22": "https://i.postimg.cc/T2QyttWM/0022.jpg",
     "23": "https://i.postimg.cc/8P579LhF/0023.jpg",
     "24": "https://i.postimg.cc/Gh54C9QX/0024.jpg",
-    "25": "https://i.postimg.cc/8zfjPDXN/0025.jpg"
+    "25": "https://i.postimg.cc/8zfjPDXN/0025.jpg",
     "26": "https://i.postimg.cc/nc3fcWNc/0026.jpg",
     "27": "https://i.postimg.cc/Dzb96w08/0027.jpg",
     "28": "https://i.postimg.cc/t4f0FxXK/0028.jpg",
     "29": "https://i.postimg.cc/t47Q15Hd/0029.jpg",
-  "30": "https://i.postimg.cc/gJFfTbL4/0030.jpg",
-  "31": "https://i.postimg.cc/vBrpR2Wy/0031.jpg",
-  "32": "https://i.postimg.cc/90cscPp7/0032.jpg",
-  "33": "https://i.postimg.cc/Znj2n97D/0033.jpg",
-  "34": "https://i.postimg.cc/pVBgq7WY/0034.jpg",
-  "35": "https://i.postimg.cc/VLL2TR5y/0035.jpg",
-  "36": "https://i.postimg.cc/FsWwQLJY/0036.jpg",
-  "37": "https://i.postimg.cc/y8Dt68Fv/0037.jpg",
-  "38": "https://i.postimg.cc/g215xbsd/0038.jpg",
-  "39": "https://i.postimg.cc/wvpGk5nG/0039.jpg",
-  "40": "https://i.postimg.cc/FRVnCd4s/0040.jpg",
-  "41": "https://i.postimg.cc/7hPtFHH1/0041.jpg",
-  "42": "https://i.postimg.cc/L5yQRc5c/0042.jpg",
-  "43": "https://i.postimg.cc/bYLBQtgm/0043.jpg",
-  "44": "https://i.postimg.cc/qMRZQvZ4/0044.jpg",
-  "45": "https://i.postimg.cc/J42YFC9J/0045.jpg",
-  "46": "https://i.postimg.cc/L8gQK0pW/0046.jpg",
-  "47": "https://i.postimg.cc/43CLJb4x/0047.jpg",
-  "48": "https://i.postimg.cc/wBhW3y3c/0048.jpg",
-  "49": "https://i.postimg.cc/JnMpXrkw/0049.jpg",
-  "50": "https://i.postimg.cc/W38X6BGd/0050.jpg"
+    "30": "https://i.postimg.cc/gJFfTbL4/0030.jpg",
+    "31": "https://i.postimg.cc/vBrpR2Wy/0031.jpg",
+    "32": "https://i.postimg.cc/90cscPp7/0032.jpg",
+    "33": "https://i.postimg.cc/Znj2n97D/0033.jpg",
+    "34": "https://i.postimg.cc/pVBgq7WY/0034.jpg",
+    "35": "https://i.postimg.cc/VLL2TR5y/0035.jpg",
+    "36": "https://i.postimg.cc/FsWwQLJY/0036.jpg",
+    "37": "https://i.postimg.cc/y8Dt68Fv/0037.jpg",
+    "38": "https://i.postimg.cc/g215xbsd/0038.jpg",
+    "39": "https://i.postimg.cc/wvpGk5nG/0039.jpg",
+    "40": "https://i.postimg.cc/FRVnCd4s/0040.jpg",
+    "41": "https://i.postimg.cc/7hPtFHH1/0041.jpg",
+    "42": "https://i.postimg.cc/L5yQRc5c/0042.jpg",
+    "43": "https://i.postimg.cc/bYLBQtgm/0043.jpg",
+    "44": "https://i.postimg.cc/qMRZQvZ4/0044.jpg",
+    "45": "https://i.postimg.cc/J42YFC9J/0045.jpg",
+    "46": "https://i.postimg.cc/L8gQK0pW/0046.jpg",
+    "47": "https://i.postimg.cc/43CLJb4x/0047.jpg",
+    "48": "https://i.postimg.cc/wBhW3y3c/0048.jpg",
+    "49": "https://i.postimg.cc/JnMpXrkw/0049.jpg",
+    "50": "https://i.postimg.cc/W38X6BGd/0050.jpg"
 }
 
 # قراءة التوكن والمنفذ من المتغيرات البيئية
