@@ -39,9 +39,9 @@ PORT = int(os.environ.get("PORT", 10000))
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
 
-    if text.startswith("تفسير صفحة"):
+    if text.startswith("المختصر"):
         try:
-            page_num = int(text.replace("تفسير صفحة", "").strip())
+            page_num = int(text.replace("المختصر", "").strip())
             page_key = str(page_num)
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
