@@ -60,14 +60,14 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 OWNER_CHAT_ID = 6115157843
 
-# رسالة /start
+# /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: المختصر 1 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
+        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
     )
 
-# معالجة الرسائل
+# رسائل التفسير
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
@@ -79,29 +79,30 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
         except Exception as e:
-            print("⚠️ خطأ في التعامل مع الرسالة:", e)
+            print("⚠️ خطأ:", e)
 
-# نبضة الحياة
+# نبضات الحياة
 async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
     try:
         await context.bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت التفسير المختصر شغال - نبضة حياة")
-        print("✅ تم إرسال نبضة الحياة")
+        print("✅ نبضة حياة أُرسلت")
     except Exception as e:
-        print(f"❌ فشل في إرسال نبضة الحياة: {e}")
+        print("❌ فشل إرسال النبضة:", e)
 
-# عند بدء التشغيل
-async def on_startup(app):
-    app.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
-    print("✅ JobQueue started")
+# بعد بدء التشغيل
+async def on_startup(application):
+    application.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
+    print("✅ JobQueue تم تشغيله")
 
 # التشغيل
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
-    print(f"✅ Webhook URL: {webhook_url}")
+    print(f"✅ Webhook: {webhook_url}")
 
     app.run_webhook(
         listen="0.0.0.0",
