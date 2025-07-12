@@ -86,10 +86,10 @@ async def send_heartbeat(bot):
         print(f"❌ خطأ في إرسال نبضة الحياة: {e}")
 
 # بدء الجدولة
-def start_scheduler(bot):
-    loop = asyncio.get_event_loop()
+async def on_startup(app):
+    loop = asyncio.get_running_loop()
     scheduler = AsyncIOScheduler(event_loop=loop)
-    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[bot])
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
     scheduler.start()
     print("✅ Scheduler started")
 
