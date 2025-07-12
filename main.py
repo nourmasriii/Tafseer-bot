@@ -1,7 +1,7 @@
 import os
 import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # روابط صفحات التفسير من 1 إلى 50
@@ -60,9 +60,16 @@ tafsir_pages = {
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
-OWNER_CHAT_ID = 6115157843  # رقم صاحب البوت
+OWNER_CHAT_ID = 6115157843
 
-# دالة إرسال صورة التفسير عند استقبال "المختصر رقم"
+# رسالة ترحيب
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📘 مرحباً بك في بوت التفسير المختصر.\n"
+        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
+    )
+
+# الرد على "المختصر رقم"
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
@@ -73,36 +80,30 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             page_key = str(page_num)
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
-        except:
-            pass
+        except Exception as e:
+            print("⚠️ خطأ في التعامل مع الرسالة:", e)
 
-# نبضة الحياة# دالة نبضة الحياة
+# نبضة الحياة
 async def send_heartbeat(bot):
     try:
-        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات القرآن شغال - نبضة حياة")
+        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت التفسير المختصر شغال - نبضة حياة")
+        print("✅ نبضة حياة أُرسلت")
     except Exception as e:
         print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
 
-# الجدولة عند التشغيل
+# عند بدء التشغيل
 async def on_startup(app):
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
+    scheduler.add_job(send_heartbeat, "interval", minutes=10, args=[app.bot])
     scheduler.start()
     print("✅ Scheduler started")
 
-
-# بدء الجدولة بعد التشغيل
-async def on_startup(app):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
-    scheduler.start()
-    print("✅ Scheduler started")
-
+# تشغيل البوت
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
