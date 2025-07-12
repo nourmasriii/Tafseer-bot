@@ -1,8 +1,8 @@
 import os
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import asyncio
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
@@ -61,9 +61,12 @@ tafsir_pages = {
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 
-OWNER_CHAT_ID = 6115157843  # رقمك في تيليجرام
+OWNER_CHAT_ID = 6115157843  # رقم صاحب البوت
 
+# دالة إرسال صورة التفسير عند استقبال "المختصر رقم"
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text:
+        return
     text = update.message.text.strip()
     if text.startswith("المختصر"):
         try:
@@ -74,18 +77,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             pass
 
-async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
+# دالة نبضة الحياة
+async def send_heartbeat(bot):
     try:
-        await context.bot.send_message(chat_id=OWNER_CHAT_ID, text="🔔 البوت شغال - نبضة حياة")
+        await bot.send_message(chat_id=OWNER_CHAT_ID, text="🔔 البوت شغال - نبضة حياة")
     except Exception as e:
-        print(f"خطأ في إرسال نبضة الحياة: {e}")
+        print(f"❌ خطأ في إرسال نبضة الحياة: {e}")
 
+# تشغيل الجدولة عند بدء البوت
 async def on_startup(app):
     scheduler = AsyncIOScheduler()
     scheduler.add_job(lambda: asyncio.create_task(send_heartbeat(app.bot)), 'interval', minutes=10)
     scheduler.start()
-    print("Scheduler started")
+    print("✅ Scheduler started")
 
+# تشغيل البوت
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
 
