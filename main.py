@@ -1,8 +1,6 @@
 import os
-import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
@@ -62,14 +60,14 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 OWNER_CHAT_ID = 6115157843
 
-# رسالة ترحيب
+# رسالة /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
+        "أرسل: المختصر 1 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
     )
 
-# الرد على "المختصر رقم"
+# معالجة الرسائل
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
@@ -84,29 +82,26 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print("⚠️ خطأ في التعامل مع الرسالة:", e)
 
 # نبضة الحياة
-async def send_heartbeat(bot):
+async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
     try:
-        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت التفسير المختصر شغال - نبضة حياة")
-        print("✅ نبضة حياة أُرسلت")
+        await context.bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت التفسير المختصر شغال - نبضة حياة")
+        print("✅ تم إرسال نبضة الحياة")
     except Exception as e:
-        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
+        print(f"❌ فشل في إرسال نبضة الحياة: {e}")
 
 # عند بدء التشغيل
 async def on_startup(app):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_heartbeat, "interval", minutes=10, args=[app.bot])
-    scheduler.start()
-    print("✅ Scheduler started")
+    app.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
+    print("✅ JobQueue started")
 
-# تشغيل البوت
+# التشغيل
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
-
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
-    print(f"✅ Webhook set to {webhook_url}")
+    print(f"✅ Webhook URL: {webhook_url}")
 
     app.run_webhook(
         listen="0.0.0.0",
