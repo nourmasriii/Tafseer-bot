@@ -91,10 +91,9 @@ async def on_startup(app):
     scheduler.start()
     print("✅ Scheduler started")
 
-# تشغيل البوت
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
-
+    app =
+    ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
