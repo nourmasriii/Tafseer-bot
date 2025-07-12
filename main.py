@@ -1,6 +1,7 @@
 import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from fastapi import FastAPI
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
@@ -56,14 +57,12 @@ tafsir_pages = {
     "50": "https://i.postimg.cc/W38X6BGd/0050.jpg"
 }
 
-# قراءة التوكن والمنفذ من المتغيرات البيئية
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 
 # التعامل مع الرسائل
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
-
     if text.startswith("المختصر"):
         try:
             page_num = int(text.replace("المختصر", "").strip())
@@ -71,27 +70,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
         except:
-            pass  # تجاهل أي أخطاء بصمت
+            pass  # تجاهل الأخطاء بصمت
 
-# تشغيل البوت بـ Webhook
+# تشغيل البوت مع دعم UptimeRobot
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+    # إضافة FastAPI للرد على /
+    fastapi_app = FastAPI()
+
+    @fastapi_app.get("/")
+    async def root():
+        return {"status": "ok"}
+
+    app._web_app = fastapi_app
+
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
-
-    from fastapi import FastAPI
-
-# هذا هو التطبيق الخارجي لخدمة Render
-fastapi_app = FastAPI()
-
-@fastapi_app.get("/")
-async def root():
-    return {"status": "ok"}
-
-# ربط fastapi مع البوت
-app._web_app = fastapi_app
 
     app.run_webhook(
         listen="0.0.0.0",
