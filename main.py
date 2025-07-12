@@ -60,7 +60,6 @@ tafsir_pages = {
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
-
 OWNER_CHAT_ID = 6115157843  # رقم صاحب البوت
 
 # دالة إرسال صورة التفسير عند استقبال "المختصر رقم"
@@ -80,7 +79,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # دالة نبضة الحياة
 async def send_heartbeat(bot):
     try:
+        print("🔄 إرسال نبضة...")
         await bot.send_message(chat_id=OWNER_CHAT_ID, text="🔔 البوت شغال - نبضة حياة")
+        print("✅ تم إرسال النبضة بنجاح")
     except Exception as e:
         print(f"❌ خطأ في إرسال نبضة الحياة: {e}")
 
@@ -91,9 +92,9 @@ async def on_startup(app):
     scheduler.start()
     print("✅ Scheduler started")
 
+# تشغيل البوت باستخدام Webhook
 def main():
-    app =
-    ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
