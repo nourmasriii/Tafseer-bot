@@ -76,30 +76,33 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             pass
 
-# نبضة الحياة
+# نبضة الحياة# دالة نبضة الحياة
 async def send_heartbeat(bot):
     try:
-        print("🔄 إرسال نبضة...")
-        await bot.send_message(chat_id=OWNER_CHAT_ID, text="🔔 البوت شغال - نبضة حياة")
-        print("✅ تم إرسال النبضة بنجاح")
+        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات القرآن شغال - نبضة حياة")
     except Exception as e:
-        print(f"❌ خطأ في إرسال نبضة الحياة: {e}")
+        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
 
-# بدء الجدولة
+# الجدولة عند التشغيل
 async def on_startup(app):
-    loop = asyncio.get_running_loop()
-    scheduler = AsyncIOScheduler(event_loop=loop)
+    scheduler = AsyncIOScheduler()
     scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
     scheduler.start()
     print("✅ Scheduler started")
 
-# التشغيل
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Start the scheduler manually (not post_init)
-    start_scheduler(app.bot)
+# بدء الجدولة بعد التشغيل
+async def on_startup(app):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
+    scheduler.start()
+    print("✅ Scheduler started")
+
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
@@ -113,4 +116,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
