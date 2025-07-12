@@ -80,13 +80,16 @@ async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print(f"خطأ في إرسال نبضة الحياة: {e}")
 
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
+async def on_startup(app):
     scheduler = AsyncIOScheduler()
     scheduler.add_job(lambda: asyncio.create_task(send_heartbeat(app.bot)), 'interval', minutes=10)
     scheduler.start()
+    print("Scheduler started")
+
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
@@ -99,6 +102,4 @@ def main():
     )
 
 if __name__ == "__main__":
-    from apscheduler.schedulers.asyncio import AsyncIOScheduler
-    import asyncio
     main()
