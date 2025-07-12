@@ -1,7 +1,6 @@
 import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
-from fastapi import FastAPI
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
@@ -72,19 +71,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             pass  # تجاهل الأخطاء بصمت
 
-# تشغيل البوت مع دعم UptimeRobot
+# تشغيل البوت Webhook
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
-    # إضافة FastAPI للرد على /
-    fastapi_app = FastAPI()
-
-    @fastapi_app.get("/")
-    async def root():
-        return {"status": "ok"}
-
-    app._web_app = fastapi_app
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
