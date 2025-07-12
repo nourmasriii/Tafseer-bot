@@ -81,6 +81,18 @@ def main():
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
 
+    from fastapi import FastAPI
+
+# هذا هو التطبيق الخارجي لخدمة Render
+fastapi_app = FastAPI()
+
+@fastapi_app.get("/")
+async def root():
+    return {"status": "ok"}
+
+# ربط fastapi مع البوت
+app._web_app = fastapi_app
+
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
