@@ -1,6 +1,8 @@
 import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
 
 # روابط صفحات التفسير من 1 إلى 50
 tafsir_pages = {
@@ -59,7 +61,8 @@ tafsir_pages = {
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 
-# التعامل مع الرسائل
+OWNER_CHAT_ID = 6115157843  # رقمك في تيليجرام
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
     if text.startswith("المختصر"):
@@ -69,12 +72,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
         except:
-            pass  # تجاهل الأخطاء بصمت
+            pass
 
-# تشغيل البوت Webhook
+async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await context.bot.send_message(chat_id=OWNER_CHAT_ID, text="🔔 البوت شغال - نبضة حياة")
+    except Exception as e:
+        print(f"خطأ في إرسال نبضة الحياة: {e}")
+
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(lambda: asyncio.create_task(send_heartbeat(app.bot)), 'interval', minutes=10)
+    scheduler.start()
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
@@ -87,4 +99,6 @@ def main():
     )
 
 if __name__ == "__main__":
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    import asyncio
     main()
