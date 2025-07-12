@@ -87,7 +87,7 @@ async def send_heartbeat(bot):
 # تشغيل الجدولة عند بدء البوت
 async def on_startup(app):
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(lambda: asyncio.create_task(send_heartbeat(app.bot)), 'interval', minutes=10)
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
     scheduler.start()
     print("✅ Scheduler started")
 
