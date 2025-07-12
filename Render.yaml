@@ -8,3 +8,10 @@ services:
     envVars:
       - key: BOT_TOKEN
         sync: false
+
+  - type: web
+    name: tafsir-healthcheck
+    env: python
+    plan: free
+    buildCommand: pip install fastapi uvicorn
+    startCommand: uvicorn healthcheck:app --host 0.0.0.0 --port 10001
