@@ -1,4 +1,5 @@
 import os
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 
@@ -35,35 +36,38 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print("⚠️ خطأ:", e)
 
 # نبضات الحياة
-async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
-    try:
-        await context.bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت التفسير المختصر شغال - نبضة حياة")
-        print("✅ نبضة حياة أُرسلت")
-    except Exception as e:
-        print("❌ فشل إرسال النبضة:", e)
+async def send_heartbeat(application):
+    while True:
+        try:
+            await application.bot.send_message(chat_id=OWNER_CHAT_ID,
+                                               text="📘 بوت التفسير المختصر شغال - نبضة حياة")
+            print("✅ نبضة حياة أُرسلت")
+        except Exception as e:
+            print("❌ فشل إرسال النبضة:", e)
+        await asyncio.sleep(600)  # كل 10 دقائق
 
 # التشغيل
 def main():
-    # بناء التطبيق
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # إضافة handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # إضافة job للـ heartbeat بعد build
-    app.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
-
-    # ضبط webhook على Render
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook: {webhook_url}")
 
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=BOT_TOKEN,
-        webhook_url=webhook_url,
-    )
+    # تشغيل الـ heartbeat بعد بدء التطبيق
+    async def runner():
+        asyncio.create_task(send_heartbeat(app))
+        await app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            url_path=BOT_TOKEN,
+            webhook_url=webhook_url,
+        )
+
+    asyncio.run(runner())
 
 if __name__ == "__main__":
     main()
