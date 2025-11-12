@@ -613,6 +613,10 @@ tafsir_pages = {
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 8443))
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
+
 OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
 
 # /start
