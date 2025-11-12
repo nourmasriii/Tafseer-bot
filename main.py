@@ -15,16 +15,20 @@ OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: 201 لتحصل على صفحة التفسير."
+        "أرسل: المختصر 201 لتحصل على صفحة التفسير."
     )
 
-# إرسال الصفحة
+# إرسال الصفحة (هنا التعديل)
 async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
-    page = update.message.text.strip()
-    if page in tafsir_pages_new:
-        await update.message.reply_photo(photo=tafsir_pages_new[page])
+    text = update.message.text.strip()
+    
+    # التأكد أن الرسالة تبدأ بـ "المختصر" ثم الرقم
+    if text.startswith("المختصر"):
+        page = text.replace("المختصر", "").strip()
+        if page in tafsir_pages_new:
+            await update.message.reply_photo(photo=tafsir_pages_new[page])
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -35,6 +39,17 @@ def main():
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
+
+    # تشغيل التطبيق (run_webhook يدير event loop)
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=BOT_TOKEN,
+        webhook_url=webhook_url,
+    )
+
+if __name__ == "__main__":
+    main()    print(f"✅ Webhook set to {webhook_url}")
 
     # تشغيل التطبيق (run_webhook يدير event loop)
     app.run_webhook(
