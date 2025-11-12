@@ -42,18 +42,19 @@ async def send_heartbeat(context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print("❌ فشل إرسال النبضة:", e)
 
-# بعد بدء التشغيل
-async def on_startup(application):
-    application.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
-    print("✅ JobQueue تم تشغيله")
-
 # التشغيل
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+    # بناء التطبيق
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
+    # إضافة handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+    # إضافة job للـ heartbeat بعد build
+    app.job_queue.run_repeating(send_heartbeat, interval=600, first=10)
+
+    # ضبط webhook على Render
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook: {webhook_url}")
 
