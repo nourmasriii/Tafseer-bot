@@ -636,6 +636,46 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
 
+# دالة نبضة الحياة
+async def send_heartbeat(bot):
+    try:
+        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات التفسير شغال - نبضة حياة")
+    except Exception as e:
+        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
+
+# الجدولة عند التشغيل
+async def on_startup(app):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
+    scheduler.start()
+    print("✅ Scheduler started")
+
+
+# بدء الجدولة بعد التشغيل
+async def on_startup(app):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
+    scheduler.start()
+    print("✅ Scheduler started")
+
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(on_startup).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
+
+    webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
+    print(f"✅ Webhook set to {webhook_url}")
+
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=BOT_TOKEN,
+        webhook_url=webhook_url,
+    )
+
+if name == "main":
+    main()
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
