@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 
 # صفحة واحدة للتجربة
-tafsir_pages = {
+tafsir_pages_new = {
     "201": "https://i.postimg.cc/ry44Pw3n/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-201.png"
 }
 
