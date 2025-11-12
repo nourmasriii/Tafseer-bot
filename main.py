@@ -636,23 +636,6 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
 
-import asyncio
-
-# دالة نبضة الحياة
-async def heartbeat(app, OWNER_CHAT_ID):
-    while True:
-        try:
-            await app.bot.send_message(chat_id=OWNER_CHAT_ID,
-                                       text="📘 البوت شغال - نبضة حياة")
-            print("✅ نبضة حياة أرسلت")
-        except Exception as e:
-            print("❌ خطأ في إرسال نبضة الحياة:", e)
-        await asyncio.sleep(600)  # كل 10 دقائق
-
-# بعد بناء التطبيق app
-# ضع هذا السطر لتشغيل النبضة
-asyncio.create_task(heartbeat(app, OWNER_CHAT_ID))
-
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
