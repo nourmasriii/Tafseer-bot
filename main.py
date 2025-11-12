@@ -18,7 +18,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "أرسل: المختصر 201 لتحصل على صفحة التفسير."
     )
 
-# إرسال الصفحة (هنا التعديل)
+# إرسال الصفحة
 async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
@@ -33,25 +33,14 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    # handlers
+    # إضافة handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
 
-    # تشغيل التطبيق (run_webhook يدير event loop)
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=BOT_TOKEN,
-        webhook_url=webhook_url,
-    )
-
-if __name__ == "__main__":
-    main()    print(f"✅ Webhook set to {webhook_url}")
-
-    # تشغيل التطبيق (run_webhook يدير event loop)
+    # تشغيل التطبيق (run_webhook يدير الـ event loop)
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
