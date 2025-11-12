@@ -636,6 +636,8 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
 
+import asyncio
+
 # دالة نبضة الحياة
 async def heartbeat(app, OWNER_CHAT_ID):
     while True:
