@@ -1,7 +1,7 @@
 import os
-import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler, filters
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # صفحة واحدة للتجربة
 tafsir_pages_new = {
@@ -9,57 +9,52 @@ tafsir_pages_new = {
 }
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 10000))
-OWNER_CHAT_ID = 6115157843
+PORT = int(os.environ.get("PORT", 8443))
+OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: المختصر 201 لتحصل على صفحة التفسير المقابلة."
+        "أرسل: 201 لتحصل على صفحة التفسير المقابلة."
     )
 
-# رسائل التفسير
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# إرسال الصفحة
+async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
-    text = update.message.text.strip()
-    if text.startswith("المختصر"):
-        try:
-            page_num = int(text.replace("المختصر", "").strip())
-            page_key = str(page_num)
-            if page_key in tafsir_pages:
-                await update.message.reply_photo(photo=tafsir_pages[page_key])
-            else:
-                await update.message.reply_text("❌ الصفحة غير موجودة حالياً.")
-        except Exception as e:
-            print("⚠️ خطأ:", e)
+    page = update.message.text.strip()
+    if page in tafsir_pages_new:
+        await update.message.reply_photo(photo=tafsir_pages_new[page])
 
-# نبضات الحياة
-async def send_heartbeat(application):
-    while True:
-        try:
-            await application.bot.send_message(chat_id=OWNER_CHAT_ID,
-                                               text="📘 بوت التفسير المختصر شغال - نبضة حياة")
-            print("✅ نبضة حياة أُرسلت")
-        except Exception as e:
-            print("❌ فشل إرسال النبضة:", e)
-        await asyncio.sleep(600)  # كل 10 دقائق
+# نبضة الحياة
+async def send_heartbeat(bot):
+    try:
+        await bot.send_message(chat_id=OWNER_CHAT_ID,
+                               text="📘 بوت صفحات القرآن شغال - نبضة حياة")
+    except Exception as e:
+        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
+
+# تشغيل الجدولة
+def setup_scheduler(app):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
+    scheduler.start()
+    print("✅ Scheduler started")
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    # إضافة handlers
+    # handlers
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
-    # تشغيل نبضة الحياة كـ task بعد build
-    asyncio.create_task(send_heartbeat(app))
+    # جدولة نبضة الحياة
+    setup_scheduler(app)
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
-    print(f"✅ Webhook: {webhook_url}")
+    print(f"✅ Webhook set to {webhook_url}")
 
-    # تشغيل التطبيق (هنا run_webhook يدير الـ event loop)
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
