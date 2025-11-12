@@ -2,9 +2,9 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 
-# روابط صفحات التفسير من 1 إلى 50
+# روابط صفحات التفسير من 1 إلى 604
 tafsir_pages = {
-  "1": "https://i.postimg.cc/50vgxqKt/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png"
+  "201": "https://i.postimg.cc/ry44Pw3n/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-201.png"
 }
     
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -15,7 +15,7 @@ OWNER_CHAT_ID = 6115157843
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 50) لتحصل على صورة التفسير المقابلة."
+        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 604) لتحصل على صورة التفسير المقابلة."
     )
 
 # رسائل التفسير
