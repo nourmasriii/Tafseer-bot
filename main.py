@@ -2,11 +2,11 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 
-# روابط صفحات التفسير من 1 إلى 604
+# صفحة واحدة للتجربة
 tafsir_pages = {
-  "201": "https://i.postimg.cc/ry44Pw3n/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-201.png"
+    "201": "https://i.postimg.cc/ry44Pw3n/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-201.png"
 }
-    
+
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))
 OWNER_CHAT_ID = 6115157843
@@ -15,7 +15,7 @@ OWNER_CHAT_ID = 6115157843
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
-        "أرسل: المختصر 12 (أو أي رقم من 1 إلى 604) لتحصل على صورة التفسير المقابلة."
+        "أرسل: المختصر 201 لتحصل على صفحة التفسير المقابلة."
     )
 
 # رسائل التفسير
@@ -29,6 +29,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             page_key = str(page_num)
             if page_key in tafsir_pages:
                 await update.message.reply_photo(photo=tafsir_pages[page_key])
+            else:
+                await update.message.reply_text("❌ الصفحة غير موجودة حالياً.")
         except Exception as e:
             print("⚠️ خطأ:", e)
 
