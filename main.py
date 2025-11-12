@@ -1,7 +1,7 @@
 import os
+import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler, filters
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
 
 # صفحة واحدة للتجربة
 tafsir_pages_new = {
@@ -28,19 +28,15 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_photo(photo=tafsir_pages_new[page])
 
 # نبضة الحياة
-async def send_heartbeat(bot):
-    try:
-        await bot.send_message(chat_id=OWNER_CHAT_ID,
-                               text="📘 بوت صفحات القرآن شغال - نبضة حياة")
-    except Exception as e:
-        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
-
-# تشغيل الجدولة
-def setup_scheduler(app):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
-    scheduler.start()
-    print("✅ Scheduler started")
+async def send_heartbeat(app):
+    while True:
+        try:
+            await app.bot.send_message(chat_id=OWNER_CHAT_ID,
+                                       text="📘 بوت صفحات القرآن شغال - نبضة حياة")
+            print("✅ نبضة حياة أُرسلت")
+        except Exception as e:
+            print("❌ خطأ في إرسال نبضة الحياة:", e)
+        await asyncio.sleep(600)  # كل 10 دقائق
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -49,12 +45,13 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
-    # جدولة نبضة الحياة
-    setup_scheduler(app)
+    # تشغيل نبضة الحياة كـ task بعد build
+    asyncio.create_task(send_heartbeat(app))
 
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
 
+    # تشغيل التطبيق (run_webhook يدير event loop بنفسه)
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
