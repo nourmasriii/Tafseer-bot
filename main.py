@@ -659,7 +659,7 @@ def main():
     app = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
-        .post_init(on_startup)  # ← هذه أهم نقطة لتشغيل النبض بانتظام
+        .on_startup(on_startup)  # ← هذه أهم نقطة لتشغيل النبض بانتظام
         .build()
     )
 
