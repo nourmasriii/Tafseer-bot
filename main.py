@@ -639,27 +639,35 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
 
-# دالة نبضة الحياة
+# 🔹 دالة نبضة الحياة
 async def send_heartbeat(bot):
     try:
         await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات التفسير شغال - نبضة حياة")
+        print("💓 تم إرسال نبضة الحياة بنجاح")
     except Exception as e:
         print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
 
-# دالة لتشغيل الجدولة عند بدء البوت
-async def start_heartbeat_scheduler(app):
+# 🔹 تشغيل الجدولة عند بدء التطبيق
+async def on_startup(app):
     scheduler = AsyncIOScheduler()
     scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
     scheduler.start()
-    print("✅ نبضة الحياة شغالة كل ١٠ دقائق")
+    print("✅ Scheduler started (نبضات الحياة كل 10 دقائق)")
 
-# دالة التشغيل الرئيسية
+# 🔹 الدالة الرئيسية
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).post_init(start_heartbeat_scheduler).build()
+    app = (
+        ApplicationBuilder()
+        .token(BOT_TOKEN)
+        .post_init(on_startup)  # ← هذه أهم نقطة لتشغيل النبض بانتظام
+        .build()
+    )
 
+    # Handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
+    # Webhook setup
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
 
@@ -670,5 +678,6 @@ def main():
         webhook_url=webhook_url,
     )
 
+# تشغيل البوت
 if __name__ == "__main__":
     main()
