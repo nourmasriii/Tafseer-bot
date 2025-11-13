@@ -639,7 +639,8 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
 
-# 🔹 نبضة الحياة
+# نبضة الحياة
+# ----------------------------
 async def send_heartbeat(bot):
     try:
         await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات التفسير شغال - نبضة حياة")
@@ -647,28 +648,35 @@ async def send_heartbeat(bot):
     except Exception as e:
         print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
 
-# 🔹 عند التشغيل
+# ----------------------------
+# تشغيل الجدولة عند بدء التطبيق
+# ----------------------------
 async def on_startup(app):
     scheduler = AsyncIOScheduler()
     scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
     scheduler.start()
     print("✅ Scheduler started (نبضات الحياة كل 10 دقائق)")
 
-# 🔹 الدالة الرئيسية
+# ----------------------------
+# الدالة الرئيسية
+# ----------------------------
 def main():
     app = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
-        .on_startup(on_startup)  # ✅ التعديل الحقيقي هنا
+        .post_init(on_startup)  # ← الطريقة الصحيحة لتشغيل نبضات الحياة
         .build()
     )
 
+    # إضافة Handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
 
+    # إعداد Webhook
     webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
     print(f"✅ Webhook set to {webhook_url}")
 
+    # تشغيل التطبيق
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
@@ -676,5 +684,8 @@ def main():
         webhook_url=webhook_url,
     )
 
+# ----------------------------
+# تشغيل البوت
+# ----------------------------
 if __name__ == "__main__":
     main()
