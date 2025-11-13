@@ -636,8 +636,7 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
         page = text.replace("المختصر", "").strip()
         if page in tafsir_pages:
             await update.message.reply_photo(photo=tafsir_pages[page])
-        else:
-            await update.message.reply_text("❌ هذه الصفحة غير موجودة حالياً.")
+    # إذا الصفحة غير موجودة، لا يفعل شيء → البوت يسكت
 
 # نبضة الحياة
 # ----------------------------
