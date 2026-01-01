@@ -638,24 +638,6 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_photo(photo=tafsir_pages[page])
     # إذا الصفحة غير موجودة، لا يفعل شيء → البوت يسكت
 
-# نبضة الحياة
-# ----------------------------
-async def send_heartbeat(bot):
-    try:
-        await bot.send_message(chat_id=OWNER_CHAT_ID, text="📘 بوت صفحات التفسير شغال - نبضة حياة")
-        print("💓 تم إرسال نبضة الحياة بنجاح")
-    except Exception as e:
-        print(f"⚠️ خطأ في إرسال نبضة الحياة: {e}")
-
-# ----------------------------
-# تشغيل الجدولة عند بدء التطبيق
-# ----------------------------
-async def on_startup(app):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_heartbeat, 'interval', minutes=10, args=[app.bot])
-    scheduler.start()
-    print("✅ Scheduler started (نبضات الحياة كل 10 دقائق)")
-
 # ----------------------------
 # الدالة الرئيسية
 # ----------------------------
@@ -663,7 +645,6 @@ def main():
     app = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
-        .post_init(on_startup)  # ← الطريقة الصحيحة لتشغيل نبضات الحياة
         .build()
     )
 
