@@ -612,7 +612,7 @@ tafsir_pages = {
 }
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 8443))
+PORT = int(os.environ.get("PORT", 10000))
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
