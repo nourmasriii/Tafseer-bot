@@ -7,7 +7,7 @@ from io import BytesIO
 # ------------------------------
 # التوكن والبورت
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 10000))  # Render يعطي PORT تلقائي
+PORT = int(os.environ.get("PORT", 8443))  # Render يعطي PORT تلقائي
 
 # ------------------------------
   "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
