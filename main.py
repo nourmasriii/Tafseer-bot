@@ -1,11 +1,16 @@
 import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
+import requests
+from io import BytesIO
 
-# ⚡ هنا تضعي كل الصفحات من 1 إلى 604
-# مثال:
-tafsir_pages = {
-  "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
+# ------------------------------
+# التوكن والبورت
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+PORT = int(os.environ.get("PORT", 10000))  # Render يعطي PORT تلقائي
+
+# ------------------------------
+ "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
   "2": "https://i.postimg.cc/J0jJsZgt/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-2.png",
   "3": "https://i.postimg.cc/VkfMNSFQ/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-3.png",
   "4": "https://i.postimg.cc/k5DbxkZx/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-4.png",
@@ -610,20 +615,8 @@ tafsir_pages = {
   "603": "https://i.postimg.cc/kMthN5t9/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-603.png",
   "604": "https://i.postimg.cc/bY2F0v2J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-604.png"
 }
-
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 10000))
-
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import asyncio
-
-OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
-
-
-
-
 # ------------------------------
-# أمر /start (اختياري)
+# أمر /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
@@ -638,7 +631,6 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text.strip()
 
-    # فقط إذا الرسالة تبدأ بـ "المختصر"
     if text.startswith("المختصر"):
         page = text.replace("المختصر", "").strip()
         if page.isdigit():
@@ -646,7 +638,6 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if 1 <= page_num <= 604:
                 if str(page_num) in tafsir_pages:
                     try:
-                        # تحميل الصورة أولًا ثم إرسالها
                         response = requests.get(tafsir_pages[str(page_num)])
                         if response.status_code == 200:
                             bio = BytesIO(response.content)
@@ -679,7 +670,7 @@ def main():
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
-        url_path=BOT_TOKEN,  # يجب أن يطابق التوكن
+        url_path=BOT_TOKEN,
         webhook_url=webhook_url,
     )
 
@@ -687,4 +678,4 @@ def main():
 # تشغيل البوت
 # ------------------------------
 if __name__ == "__main__":
-    main()
+    main()  
