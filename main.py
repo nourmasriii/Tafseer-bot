@@ -626,7 +626,55 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "أرسل: المختصر 1 إلى 604 لتحصل على صفحة التفسير المقابلة."
     )
 
-# إرسال الصفحة
+# ------------------------------
+# إرسال الصفحة عند الأمر الصحيح فقط
+async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text:
+        return
+
+    text = update.message.text.strip()
+
+    # تحقق أن الرسالة تبدأ بـ "المختصر"
+    if text.startswith("المختصر"):
+        page = text.replace("المختصر", "").strip()
+        if page.isdigit():
+            page_num = int(page)
+            if 1 <= page_num <= 604:
+                if str(page_num) in tafsir_pages:
+                    await update.message.reply_photo(photo=tafsir_pages[str(page_num)])
+    # أي شيء آخر → البوت يسكت تمامًا
+
+# ------------------------------
+# الدالة الرئيسية
+# ------------------------------
+def main():
+    app = (
+        ApplicationBuilder()
+        .token(BOT_TOKEN)
+        .build()
+    )
+
+    # إضافة Handlers
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, send_page))
+
+    # إعداد Webhook
+    webhook_url = f"https://{os.environ['RENDER_EXTERNAL_HOSTNAME']}/{BOT_TOKEN}"
+    print(f"✅ Webhook set to {webhook_url}")
+
+    # تشغيل البوت على Webhook
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=BOT_TOKEN,
+        webhook_url=webhook_url,
+    )
+
+# ------------------------------
+# تشغيل البوت
+# ------------------------------
+if __name__ == "__main__":
+    main()
 async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
