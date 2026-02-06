@@ -658,11 +658,11 @@ def main():
 
     # تشغيل التطبيق
     app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=BOT_TOKEN,
-        webhook_url=webhook_url,
-    )
+    listen="0.0.0.0",
+    port=PORT,
+    url_path="webhook",
+    webhook_url=webhook_url,
+)
 
 # ----------------------------
 # تشغيل البوت
