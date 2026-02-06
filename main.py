@@ -10,7 +10,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 10000))  # Render يعطي PORT تلقائي
 
 # ------------------------------
- "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
+  "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
   "2": "https://i.postimg.cc/J0jJsZgt/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-2.png",
   "3": "https://i.postimg.cc/VkfMNSFQ/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-3.png",
   "4": "https://i.postimg.cc/k5DbxkZx/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-4.png",
