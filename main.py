@@ -619,7 +619,30 @@ import asyncio
 
 OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
 
-# /start
+
+import os
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+import requests
+from io import BytesIO
+
+# ------------------------------
+# التوكن والبورت
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+PORT = int(os.environ.get("PORT", 8443))
+
+# ------------------------------
+# روابط صفحات التفسير
+# ضعي هنا روابط صفحاتك المباشرة (PNG أو JPG)
+tafsir_pages = {
+    # مثال:
+    # "1": "https://i.ibb.co/example/0001.png",
+    # "2": "https://i.ibb.co/example/0002.png",
+    # أكمل حتى 604
+}
+
+# ------------------------------
+# أمر /start (اختياري)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📘 مرحباً بك في بوت التفسير المختصر.\n"
@@ -627,21 +650,30 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # ------------------------------
-# إرسال الصفحة عند الأمر الصحيح فقط
+# إرسال الصفحة عند الأمر الصحيح فقط (صامت لأي خطأ)
 async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
 
     text = update.message.text.strip()
 
-    # تحقق أن الرسالة تبدأ بـ "المختصر"
+    # فقط إذا الرسالة تبدأ بـ "المختصر"
     if text.startswith("المختصر"):
         page = text.replace("المختصر", "").strip()
         if page.isdigit():
             page_num = int(page)
             if 1 <= page_num <= 604:
                 if str(page_num) in tafsir_pages:
-                    await update.message.reply_photo(photo=tafsir_pages[str(page_num)])
+                    try:
+                        # تحميل الصورة أولًا ثم إرسالها
+                        response = requests.get(tafsir_pages[str(page_num)])
+                        if response.status_code == 200:
+                            bio = BytesIO(response.content)
+                            bio.name = f"{page_num}.png"
+                            await update.message.reply_photo(photo=bio)
+                    except:
+                        # أي خطأ أثناء التحميل → تجاهله تمامًا
+                        pass
     # أي شيء آخر → البوت يسكت تمامًا
 
 # ------------------------------
@@ -666,7 +698,7 @@ def main():
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
-        url_path=BOT_TOKEN,
+        url_path=BOT_TOKEN,  # يجب أن يطابق التوكن
         webhook_url=webhook_url,
     )
 
