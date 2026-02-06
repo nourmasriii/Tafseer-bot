@@ -620,26 +620,7 @@ import asyncio
 OWNER_CHAT_ID = 6115157843  # ضع هنا رقمك الشخصي
 
 
-import os
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import requests
-from io import BytesIO
 
-# ------------------------------
-# التوكن والبورت
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-PORT = int(os.environ.get("PORT", 8443))
-
-# ------------------------------
-# روابط صفحات التفسير
-# ضعي هنا روابط صفحاتك المباشرة (PNG أو JPG)
-tafsir_pages = {
-    # مثال:
-    # "1": "https://i.ibb.co/example/0001.png",
-    # "2": "https://i.ibb.co/example/0002.png",
-    # أكمل حتى 604
-}
 
 # ------------------------------
 # أمر /start (اختياري)
