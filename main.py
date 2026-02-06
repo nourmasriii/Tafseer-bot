@@ -10,6 +10,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 PORT = int(os.environ.get("PORT", 8443))  # Render يعطي PORT تلقائي
 
 # ------------------------------
+# روابط صفحات التفسير 1-604 (نماذج)
 tafsir_pages = {
   "1": "https://i.postimg.cc/L81Dzg1J/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-1.png",
   "2": "https://i.postimg.cc/J0jJsZgt/almkhtsr-fy-tfsyr-alqran-alkrym-altbʿt-alsadst-1-604-2.png",
@@ -645,7 +646,6 @@ async def send_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
                             bio.name = f"{page_num}.png"
                             await update.message.reply_photo(photo=bio)
                     except:
-                        # أي خطأ أثناء التحميل → تجاهله تمامًا
                         pass
     # أي شيء آخر → البوت يسكت تمامًا
 
@@ -671,7 +671,7 @@ def main():
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
-        url_path=BOT_TOKEN,
+        url_path=BOT_TOKEN,  # يجب أن يطابق التوكن
         webhook_url=webhook_url,
     )
 
@@ -679,4 +679,4 @@ def main():
 # تشغيل البوت
 # ------------------------------
 if __name__ == "__main__":
-    main()  
+    main()
